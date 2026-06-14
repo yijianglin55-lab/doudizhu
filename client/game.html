@@ -31,12 +31,31 @@
       <!-- 倍数 -->
       <div class="multiplier-badge" id="mult-badge">×1</div>
 
-      <!-- 出牌倒计时 -->
-      <div id="turn-timer" class="turn-timer-mobile hidden">
-        <span id="turn-timer-num">20</span>
+      <!-- 左侧对手 -->
+      <div class="opponent-zone left">
+        <div class="player-info" id="info-left">
+          <div class="avatar" id="av-left">?</div>
+          <div>
+            <div class="pname" id="name-left">对手</div>
+            <div class="pcount" id="cnt-left">17张</div>
+          </div>
+        </div>
+        <div class="turn-badge hidden" id="timer-left"><span id="timer-left-num">20</span></div>
+        <div id="hand-left"></div>
       </div>
 
-      <!-- 左侧对手 -->
+      <!-- 右侧对手 -->
+      <div class="opponent-zone right">
+        <div class="player-info" id="info-right">
+          <div class="avatar" id="av-right">?</div>
+          <div>
+            <div class="pname" id="name-right">对手</div>
+            <div class="pcount" id="cnt-right">17张</div>
+          </div>
+        </div>
+        <div class="turn-badge hidden" id="timer-right"><span id="timer-right-num">20</span></div>
+        <div id="hand-right"></div>
+      </div>
       <div class="opponent-zone left">
         <div class="player-info" id="info-left">
           <div class="avatar"  id="av-left">?</div>
@@ -93,12 +112,13 @@
       <!-- 我的信息 -->
       <div class="my-info-box">
         <div class="player-info" id="info-me">
-          <div class="avatar"  id="av-me">?</div>
+          <div class="avatar" id="av-me">?</div>
           <div>
             <div class="pname" id="name-me">我</div>
             <div class="pcount" id="cnt-me">17张</div>
           </div>
         </div>
+        <div class="turn-badge hidden" id="timer-me"><span id="timer-me-num">20</span></div>
       </div>
 
     </div>
@@ -290,57 +310,55 @@
       playTimer: null,
       playTimeLeft: 20,
 
-      isMobile: /Mobi|Android|iPhone/i.test(navigator.userAgent),
+      // 倒计时：三个独立元素，分别在每个玩家区域内
+      showTimer: function(playerIndex) {
+        this.hideAllTimers();
+        if (playerIndex < 0) return;
+        var key = this.relKeys[this.getRel(playerIndex)];
+        var el = document.getElementById('timer-' + key);
+        if (el) el.classList.remove('hidden');
+      },
 
-      positionTimer: function() {
-        var timerEl = document.getElementById('turn-timer');
-        if (!timerEl) return;
-        if (this.currentPlayer < 0 || !this.isPlaying) {
-          timerEl.classList.add('hidden');
-          return;
-        }
-        timerEl.classList.remove('hidden');
+      hideAllTimers: function() {
+        ['timer-left', 'timer-right', 'timer-me'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        });
+      },
 
-        // 桌面端：用JS定位到当前玩家旁边
-        if (!this.isMobile) {
-          var key = this.relKeys[this.getRel(this.currentPlayer)];
-          var infoEl = document.getElementById('info-' + key);
-          if (infoEl) {
-            var rect = infoEl.getBoundingClientRect();
-            timerEl.style.position = 'fixed';
-            timerEl.style.left = (rect.right + 8) + 'px';
-            timerEl.style.top = (rect.top + rect.height / 2 - 22) + 'px';
-            timerEl.style.bottom = 'auto';
-            timerEl.style.transform = 'none';
-          }
-        }
-        // 手机端：用CSS固定位置（bottom:24vw, left:50%）
+      updateTimerNum: function(val) {
+        ['timer-left-num', 'timer-right-num', 'timer-me-num'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = val;
+        });
+      },
+
+      setTimerColor: function(isUrgent) {
+        var color = isUrgent ? '#e94560' : '#fdcb6e';
+        ['timer-left', 'timer-right', 'timer-me'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) { el.style.borderColor = color; el.style.color = color; }
+        });
       },
 
       startPlayCountdown: function() {
         var self = this;
         this.stopPlayCountdown();
         this.playTimeLeft = 20;
-        var numEl = document.getElementById('turn-timer-num');
-        if (numEl) numEl.textContent = this.playTimeLeft;
-        this.positionTimer();
+        this.updateTimerNum(this.playTimeLeft);
+        this.setTimerColor(false);
+        this.showTimer(this.currentPlayer);
         this.playTimer = setInterval(function() {
           self.playTimeLeft--;
-          if (numEl) numEl.textContent = self.playTimeLeft;
-          // 最后5秒变红
-          var timerEl = document.getElementById('turn-timer');
-          if (timerEl) {
-            timerEl.style.borderColor = self.playTimeLeft <= 5 ? '#e94560' : '#fdcb6e';
-            timerEl.style.color = self.playTimeLeft <= 5 ? '#e94560' : '#fdcb6e';
-          }
+          self.updateTimerNum(self.playTimeLeft);
+          self.setTimerColor(self.playTimeLeft <= 5);
           if (self.playTimeLeft <= 0) self.stopPlayCountdown();
         }, 1000);
       },
 
       stopPlayCountdown: function() {
         if (this.playTimer) { clearInterval(this.playTimer); this.playTimer = null; }
-        var timerEl = document.getElementById('turn-timer');
-        if (timerEl) timerEl.classList.add('hidden');
+        this.hideAllTimers();
       },
 
       renderPlayers: function() {
