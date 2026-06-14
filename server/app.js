@@ -16,7 +16,6 @@ const app = express();
 // 中间件
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '../client')));
 
 // CORS
 app.use((req, res, next) => {
@@ -27,7 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// 路由
+// API 路由（必须在静态文件之前）
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/rooms', require('./routes/room'));
 app.use('/api/admin', require('./routes/admin'));
@@ -36,10 +35,13 @@ app.get('/api/health', (req, res) => {
   res.json({ code: 0, msg: 'ok', data: { uptime: process.uptime(), port: config.server.port } });
 });
 
+// 静态文件
+const clientPath = path.join(__dirname, '..', 'client');
+app.use(express.static(clientPath));
+
+// SPA 兜底：非 API、非静态文件的请求返回 index.html
 app.get('*', (req, res) => {
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(__dirname, '../client/index.html'));
-  }
+  res.sendFile(path.join(clientPath, 'index.html'));
 });
 
 app.use((err, req, res, next) => {
