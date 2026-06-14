@@ -1,0 +1,13 @@
+{
+  "name": "doudizhu-online",
+  "version": "1.0.0",
+  "description": "网页端联机斗地主游戏",
+  "main": "server/app.js",
+  "scripts": {
+    "start": "node server/app.js",
+    "install-server": "cd server && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

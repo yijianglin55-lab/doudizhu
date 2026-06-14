@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>个人信息 - 斗地主</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- 竖屏提示 -->
+  <div class="rotate-device-overlay">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-text">请旋转设备至横屏体验游戏</div>
+  </div>
+
+  <!-- 个人信息页 -->
+  <div class="profile-container">
+    <div class="flex items-center gap-20" style="align-self:flex-start;">
+      <a href="lobby.html" class="btn btn-secondary btn-sm">← 返回大厅</a>
+      <h2>个人信息</h2>
+    </div>
+
+    <div class="profile-header">
+      <div class="avatar profile-avatar" id="profile-avatar">?</div>
+      <div style="font-size:20px;font-weight:bold;" id="profile-name">玩家</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);" id="profile-id">ID: -</div>
+    </div>
+
+    <div class="card-box" style="width:100%;max-width:400px;">
+      <div class="profile-stats">
+        <div class="stat-item">
+          <div class="stat-value" id="stat-gold">0</div>
+          <div class="stat-label">🪙 金币</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-wins">0</div>
+          <div class="stat-label">🏆 胜利</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-losses">0</div>
+          <div class="stat-label">💔 失败</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="stat-winrate">0%</div>
+          <div class="stat-label">📊 胜率</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-box" style="width:100%;max-width:400px;">
+      <h3 style="margin-bottom:15px;">修改昵称</h3>
+      <div class="flex gap-10">
+        <input type="text" class="input" id="new-nickname" placeholder="输入新昵称" maxlength="20">
+        <button class="btn btn-primary" id="btn-update-nickname">修改</button>
+      </div>
+    </div>
+
+    <div class="card-box" style="width:100%;max-width:400px;">
+      <h3 style="margin-bottom:15px;">对局记录</h3>
+      <div id="game-history" style="max-height:200px;overflow-y:auto;">
+        <div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;">
+          暂无对局记录
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // 检查登录状态
+    const token = Utils.storage.get('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    Utils.checkOrientation();
+
+    // 加载个人信息
+    async function loadProfile() {
+      const result = await API.getProfile();
+      if (result.code === 0) {
+        const user = result.data;
+        document.getElementById('profile-avatar').textContent = Utils.getAvatarLetter(user.nickname || user.username);
+        document.getElementById('profile-name').textContent = user.nickname || user.username;
+        document.getElementById('profile-id').textContent = `ID: ${user.id}`;
+        document.getElementById('stat-gold').textContent = Utils.formatGold(user.gold);
+        document.getElementById('stat-wins').textContent = user.wins;
+        document.getElementById('stat-losses').textContent = user.losses;
+        document.getElementById('stat-winrate').textContent = user.winRate;
+      }
+    }
+
+    // 修改昵称
+    document.getElementById('btn-update-nickname').addEventListener('click', async () => {
+      const nickname = document.getElementById('new-nickname').value.trim();
+      if (!nickname) {
+        Utils.toast('请输入新昵称', 'warning');
+        return;
+      }
+
+      const result = await API.updateNickname(nickname);
+      if (result.code === 0) {
+        Utils.toast('昵称修改成功', 'success');
+        document.getElementById('profile-name').textContent = nickname;
+        document.getElementById('profile-avatar').textContent = Utils.getAvatarLetter(nickname);
+
+        // 更新本地存储
+        const user = Utils.storage.get('user');
+        if (user) {
+          user.nickname = nickname;
+          Utils.storage.set('user', user);
+        }
+      } else {
+        Utils.toast(result.msg, 'error');
+      }
+    });
+
+    // 初始加载
+    loadProfile();
+  </script>
+</body>
+</html>

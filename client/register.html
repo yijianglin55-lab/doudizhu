@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>注册 - 斗地主</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <!-- 竖屏提示 -->
+  <div class="rotate-device-overlay">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-text">请旋转设备至横屏体验游戏</div>
+  </div>
+
+  <!-- 注册页 -->
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-title">🃏 用户注册</div>
+      <form class="auth-form" id="register-form">
+        <input type="text" class="input" id="username" placeholder="用户名 (3-20个字符)" autocomplete="username" required>
+        <input type="text" class="input" id="nickname" placeholder="昵称 (可选)" maxlength="20">
+        <input type="password" class="input" id="password" placeholder="密码 (6-30个字符)" autocomplete="new-password" required>
+        <input type="password" class="input" id="password-confirm" placeholder="确认密码" autocomplete="new-password" required>
+        <button type="submit" class="btn btn-primary btn-ripple">注 册</button>
+      </form>
+      <div class="auth-footer">
+        已有账号？<a href="login.html">立即登录</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // 检查屏幕方向
+    Utils.checkOrientation();
+
+    // 注册表单提交
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const nickname = document.getElementById('nickname').value.trim();
+      const password = document.getElementById('password').value;
+      const passwordConfirm = document.getElementById('password-confirm').value;
+
+      // 校验
+      if (!username || !password) {
+        Utils.toast('请填写用户名和密码', 'warning');
+        return;
+      }
+      if (username.length < 3 || username.length > 20) {
+        Utils.toast('用户名长度需要3-20个字符', 'warning');
+        return;
+      }
+      if (password.length < 6 || password.length > 30) {
+        Utils.toast('密码长度需要6-30个字符', 'warning');
+        return;
+      }
+      if (password !== passwordConfirm) {
+        Utils.toast('两次密码输入不一致', 'warning');
+        return;
+      }
+
+      const btn = e.target.querySelector('button');
+      btn.disabled = true;
+      btn.textContent = '注册中...';
+
+      const result = await API.register(username, password, nickname);
+
+      if (result.code === 0) {
+        Utils.storage.set('token', result.data.token);
+        Utils.storage.set('user', result.data.user);
+        Utils.toast('注册成功', 'success');
+        setTimeout(() => {
+          window.location.href = 'lobby.html';
+        }, 500);
+      } else {
+        Utils.toast(result.msg, 'error');
+        btn.disabled = false;
+        btn.textContent = '注 册';
+      }
+    });
+  </script>
+</body>
+</html>

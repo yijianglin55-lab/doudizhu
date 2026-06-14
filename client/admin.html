@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 - 斗地主</title>
+  <link rel="stylesheet" href="css/common.css">
+  <style>
+    .admin-layout {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .admin-tabs {
+      display: flex;
+      gap: 5px;
+    }
+    .admin-tab {
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.3s;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      border: none;
+    }
+    .admin-tab.active {
+      background: #e94560;
+      color: #fff;
+    }
+    .admin-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .admin-table th, .admin-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 13px;
+    }
+    .admin-table th {
+      background: rgba(0,0,0,0.2);
+      font-weight: 600;
+    }
+    .admin-table tr:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .stat-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .stat-card-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #fdcb6e;
+    }
+    .stat-card-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 5px;
+    }
+    .admin-login-box {
+      width: 100%;
+      max-width: 360px;
+      margin: 100px auto;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 30px;
+    }
+  </style>
+</head>
+<body>
+  <!-- 管理员登录 -->
+  <div id="admin-login" class="admin-login-box">
+    <div class="auth-title">🔧 后台管理登录</div>
+    <div class="auth-form">
+      <input type="text" class="input" id="admin-username" placeholder="管理员账号">
+      <input type="password" class="input" id="admin-password" placeholder="管理员密码">
+      <button class="btn btn-primary" id="btn-admin-login">登录</button>
+    </div>
+  </div>
+
+  <!-- 管理后台 -->
+  <div id="admin-panel" class="admin-layout hidden">
+    <div class="admin-header">
+      <div style="font-weight:bold;">🔧 斗地主后台管理</div>
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="stats">统计</button>
+        <button class="admin-tab" data-tab="users">用户</button>
+        <button class="admin-tab" data-tab="rooms">房间</button>
+        <button class="admin-tab" data-tab="history">记录</button>
+        <button class="admin-tab" data-tab="config">配置</button>
+      </div>
+      <button class="btn btn-sm btn-danger" id="btn-admin-logout">退出</button>
+    </div>
+
+    <div class="admin-content">
+      <!-- 统计面板 -->
+      <div class="tab-content active" id="tab-stats">
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-card-value" id="s-users">0</div>
+            <div class="stat-card-label">总用户数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="s-online">0</div>
+            <div class="stat-card-label">在线用户</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="s-rooms">0</div>
+            <div class="stat-card-label">活跃房间</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="s-games">0</div>
+            <div class="stat-card-label">历史对局</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-value" id="s-banned">0</div>
+            <div class="stat-card-label">封禁用户</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 用户管理 -->
+      <div class="tab-content" id="tab-users" style="display:none;">
+        <h3 style="margin-bottom:15px;">用户管理</h3>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>用户名</th>
+                <th>昵称</th>
+                <th>金币</th>
+                <th>战绩</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 房间管理 -->
+      <div class="tab-content" id="tab-rooms" style="display:none;">
+        <h3 style="margin-bottom:15px;">活跃房间</h3>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="rooms-table">
+            <thead>
+              <tr>
+                <th>房间号</th>
+                <th>人数</th>
+                <th>状态</th>
+                <th>底分</th>
+                <th>创建时间</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 对局记录 -->
+      <div class="tab-content" id="tab-history" style="display:none;">
+        <h3 style="margin-bottom:15px;">对局记录</h3>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>玩家</th>
+                <th>地主</th>
+                <th>赢家</th>
+                <th>底分</th>
+                <th>倍数</th>
+                <th>结算</th>
+                <th>时间</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 配置管理 -->
+      <div class="tab-content" id="tab-config" style="display:none;">
+        <h3 style="margin-bottom:15px;">匹配配置</h3>
+        <div class="card-box" style="max-width:400px;">
+          <div class="auth-form">
+            <label style="font-size:13px;color:rgba(255,255,255,0.6);">基础底分</label>
+            <input type="number" class="input" id="cfg-base-score" value="100">
+            <label style="font-size:13px;color:rgba(255,255,255,0.6);">最低入场金币</label>
+            <input type="number" class="input" id="cfg-min-gold" value="1000">
+            <label style="font-size:13px;color:rgba(255,255,255,0.6);">出牌超时(秒)</label>
+            <input type="number" class="input" id="cfg-turn-timeout" value="30">
+            <button class="btn btn-primary" id="btn-save-config">保存配置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // ==================== 管理员登录 ====================
+    document.getElementById('btn-admin-login').addEventListener('click', async () => {
+      const username = document.getElementById('admin-username').value.trim();
+      const password = document.getElementById('admin-password').value;
+
+      const result = await API.login(username, password);
+      if (result.code === 0) {
+        Utils.storage.set('token', result.data.token);
+        Utils.storage.set('user', result.data.user);
+
+        // 验证管理员权限
+        const check = await API.adminCheck();
+        if (check.code === 0) {
+          document.getElementById('admin-login').classList.add('hidden');
+          document.getElementById('admin-panel').classList.remove('hidden');
+          loadStats();
+        } else {
+          Utils.toast('该账号不是管理员', 'error');
+          Utils.storage.remove('token');
+        }
+      } else {
+        Utils.toast(result.msg, 'error');
+      }
+    });
+
+    // 检查已登录状态
+    if (Utils.storage.get('token')) {
+      API.adminCheck().then(result => {
+        if (result.code === 0) {
+          document.getElementById('admin-login').classList.add('hidden');
+          document.getElementById('admin-panel').classList.remove('hidden');
+          loadStats();
+        }
+      });
+    }
+
+    // ==================== Tab切换 ====================
+    document.querySelectorAll('.admin-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+        tab.classList.add('active');
+        document.getElementById(`tab-${tab.dataset.tab}`).style.display = 'block';
+
+        // 加载数据
+        switch (tab.dataset.tab) {
+          case 'stats': loadStats(); break;
+          case 'users': loadUsers(); break;
+          case 'rooms': loadRooms(); break;
+          case 'history': loadHistory(); break;
+          case 'config': loadConfig(); break;
+        }
+      });
+    });
+
+    // ==================== 加载统计 ====================
+    async function loadStats() {
+      const result = await API.adminGetStats();
+      if (result.code === 0) {
+        const d = result.data;
+        document.getElementById('s-users').textContent = d.totalUsers;
+        document.getElementById('s-online').textContent = d.onlineUsers;
+        document.getElementById('s-rooms').textContent = d.activeRooms;
+        document.getElementById('s-games').textContent = d.totalGames;
+        document.getElementById('s-banned').textContent = d.bannedUsers;
+      }
+    }
+
+    // ==================== 加载用户 ====================
+    async function loadUsers() {
+      const result = await API.adminGetUsers();
+      if (result.code === 0) {
+        const tbody = document.querySelector('#users-table tbody');
+        tbody.innerHTML = result.data.map(u => `
+          <tr>
+            <td>${u.id}</td>
+            <td>${u.username}</td>
+            <td>${u.nickname}</td>
+            <td>
+              <input type="number" value="${u.gold}" style="width:80px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:4px;color:#fff;padding:4px;" onchange="setUserGold(${u.id}, this.value)">
+            </td>
+            <td>${u.wins}胜 ${u.losses}负</td>
+            <td>${u.isOnline ? '🟢在线' : '⚪离线'} ${u.isBanned ? '🔴封禁' : ''}</td>
+            <td>
+              <button class="btn btn-sm ${u.isBanned ? 'btn-success' : 'btn-danger'}" onclick="toggleBan(${u.id}, ${!u.isBanned})">
+                ${u.isBanned ? '解封' : '封禁'}
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    async function setUserGold(userId, gold) {
+      const result = await API.adminSetGold(userId, parseInt(gold));
+      if (result.code === 0) {
+        Utils.toast('金币已更新', 'success');
+      }
+    }
+
+    async function toggleBan(userId, banned) {
+      const result = await API.adminSetBanned(userId, banned);
+      if (result.code === 0) {
+        Utils.toast(banned ? '已封禁' : '已解封', 'success');
+        loadUsers();
+      }
+    }
+
+    // ==================== 加载房间 ====================
+    async function loadRooms() {
+      const result = await API.adminGetRooms();
+      if (result.code === 0) {
+        const tbody = document.querySelector('#rooms-table tbody');
+        tbody.innerHTML = result.data.map(r => `
+          <tr>
+            <td>${r.room_code}</td>
+            <td>${r.current_players}/3</td>
+            <td>${r.status}</td>
+            <td>${r.base_score}</td>
+            <td>${r.created_at}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="5" style="text-align:center;">暂无活跃房间</td></tr>';
+      }
+    }
+
+    // ==================== 加载历史 ====================
+    async function loadHistory() {
+      const result = await API.adminGetHistory(50, 0);
+      if (result.code === 0) {
+        const tbody = document.querySelector('#history-table tbody');
+        tbody.innerHTML = result.data.list.map(h => `
+          <tr>
+            <td>${h.id}</td>
+            <td>${h.player1_name || '-'}, ${h.player2_name || '-'}, ${h.player3_name || '-'}</td>
+            <td>${h.landlord_id}</td>
+            <td>${h.winner_id}</td>
+            <td>${h.base_score}</td>
+            <td>×${h.multiplier}</td>
+            <td>${h.player1_score}/${h.player2_score}/${h.player3_score}</td>
+            <td>${h.ended_at}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="8" style="text-align:center;">暂无记录</td></tr>';
+      }
+    }
+
+    // ==================== 加载配置 ====================
+    async function loadConfig() {
+      const result = await API.adminGetMatchConfig();
+      if (result.code === 0) {
+        document.getElementById('cfg-base-score').value = result.data.baseScore;
+        document.getElementById('cfg-min-gold').value = result.data.minGold;
+        document.getElementById('cfg-turn-timeout').value = result.data.turnTimeout;
+      }
+    }
+
+    document.getElementById('btn-save-config').addEventListener('click', async () => {
+      const result = await API.adminUpdateMatchConfig({
+        baseScore: parseInt(document.getElementById('cfg-base-score').value),
+        minGold: parseInt(document.getElementById('cfg-min-gold').value),
+        turnTimeout: parseInt(document.getElementById('cfg-turn-timeout').value),
+      });
+      if (result.code === 0) {
+        Utils.toast('配置已保存', 'success');
+      }
+    });
+
+    // ==================== 退出 ====================
+    document.getElementById('btn-admin-logout').addEventListener('click', () => {
+      Utils.storage.remove('token');
+      Utils.storage.remove('user');
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

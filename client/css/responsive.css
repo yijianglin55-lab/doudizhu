@@ -1,0 +1,270 @@
+/**
+ * 响应式样式
+ * 手机横屏适配
+ */
+
+/* ==================== 竖屏提示（仅在移动端竖屏时显示）==================== */
+.rotate-device-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  gap: 20px;
+}
+
+/* 仅在移动端竖屏时显示遮罩 */
+@media screen and (orientation: portrait) and (max-width: 768px) {
+  .rotate-device-overlay {
+    display: flex;
+  }
+}
+
+.rotate-icon {
+  font-size: 60px;
+  animation: rotatePhone 2s ease infinite;
+}
+
+@keyframes rotatePhone {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(90deg); }
+  75% { transform: rotate(0); }
+}
+
+.rotate-text {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+/* ==================== 小屏手机适配 ==================== */
+@media screen and (max-height: 400px) and (orientation: landscape) {
+  .card {
+    width: 60px;
+    height: 86px;
+  }
+  .card-sm { width: 44px; height: 63px; }
+  .card-xs { width: 30px; height: 43px; }
+  .hand-area { bottom: 5px; min-height: 100px; }
+  .action-bar { bottom: 110px; }
+  .player-info { padding: 5px 8px; }
+  .player-name { font-size: 11px; }
+}
+
+/* ==================== 安全区域适配 ==================== */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .hand-area { padding-bottom: env(safe-area-inset-bottom); }
+  .action-bar { bottom: calc(160px + env(safe-area-inset-bottom)); }
+}
+
+/* ==================== 登录/注册页面 ==================== */
+.auth-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  backdrop-filter: blur(10px);
+}
+
+.auth-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #e94560, #fdcb6e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-form .input { width: 100%; }
+.auth-form .btn { width: 100%; margin-top: 10px; }
+
+.auth-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ==================== 大厅页面 ==================== */
+.lobby-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  gap: 15px;
+}
+
+.lobby-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.lobby-content {
+  flex: 1;
+  display: flex;
+  gap: 15px;
+  overflow: hidden;
+}
+
+.lobby-sidebar {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.lobby-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lobby-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.room-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.room-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(233, 69, 96, 0.3);
+}
+
+/* ==================== 房间等待页 ==================== */
+.room-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px;
+}
+
+.room-title { font-size: 20px; font-weight: bold; }
+
+.room-code {
+  font-size: 36px;
+  font-weight: bold;
+  color: #fdcb6e;
+  letter-spacing: 8px;
+}
+
+.room-players { display: flex; gap: 40px; }
+
+.room-player-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+.room-player-slot.occupied {
+  border-style: solid;
+  border-color: rgba(233, 69, 96, 0.3);
+}
+
+.room-player-slot.ready {
+  border-color: #00b894;
+  background: rgba(0, 184, 148, 0.1);
+}
+
+.room-actions { display: flex; gap: 15px; }
+
+/* ==================== 个人信息页 ==================== */
+.profile-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-avatar { width: 80px; height: 80px; font-size: 36px; }
+
+.profile-stats { display: flex; gap: 30px; }
+
+.stat-item { text-align: center; }
+
+.stat-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fdcb6e;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 5px;
+}

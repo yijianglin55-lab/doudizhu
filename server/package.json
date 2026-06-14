@@ -1,0 +1,16 @@
+{
+  "name": "doudizhu-server",
+  "version": "1.0.0",
+  "description": "斗地主联机游戏服务端",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0",
+    "sql.js": "^1.10.0",
+    "bcryptjs": "^2.4.3"
+  }
+}

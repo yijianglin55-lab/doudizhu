@@ -1,0 +1,320 @@
+/**
+ * 动画样式
+ * 页面切换、特效动画、关键帧定义
+ */
+
+/* ==================== 页面切换 ==================== */
+.page {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  overflow: hidden;
+}
+
+.page.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.page-enter {
+  animation: pageSlideIn 0.4s ease forwards;
+}
+
+.page-exit {
+  animation: pageSlideOut 0.3s ease forwards;
+}
+
+@keyframes pageSlideIn {
+  from { transform: translateX(30px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes pageSlideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-30px); opacity: 0; }
+}
+
+/* ==================== 发牌动画 ==================== */
+.card-deal-anim {
+  animation: cardDealFromCenter 0.6s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes cardDealFromCenter {
+  0% {
+    opacity: 0;
+    transform: translate(var(--deal-from-x, 0), var(--deal-from-y, -200px)) scale(0.5) rotate(-20deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1) rotate(0);
+  }
+}
+
+/* ==================== 翻牌动画（3D） ==================== */
+.card-flip {
+  perspective: 600px;
+}
+
+.card-flip-inner {
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.card-flip.flipped .card-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.card-flip-front,
+.card-flip-back {
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.card-flip-back {
+  transform: rotateY(180deg);
+}
+
+/* ==================== 出牌飞出 ==================== */
+.card-fly-out {
+  animation: cardFlyToCenter 0.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes cardFlyToCenter {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-80px) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120px) scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+/* ==================== 底牌飞入 ==================== */
+.landlord-card-fly {
+  animation: landlordCardFly 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  opacity: 0;
+}
+
+@keyframes landlordCardFly {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.3) rotate(10deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.05) rotate(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+
+/* ==================== 炸弹特效 ==================== */
+.bomb-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+.bomb-flash {
+  animation: bombFlash 0.6s ease;
+}
+
+@keyframes bombFlash {
+  0% { background: transparent; }
+  20% { background: rgba(255, 100, 0, 0.4); }
+  40% { background: rgba(255, 200, 0, 0.3); }
+  60% { background: rgba(255, 100, 0, 0.2); }
+  80% { background: rgba(255, 200, 0, 0.1); }
+  100% { background: transparent; }
+}
+
+/* 屏幕震动 */
+.screen-shake {
+  animation: screenShake 0.5s ease;
+}
+
+@keyframes screenShake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-5px, -5px); }
+  20% { transform: translate(5px, -5px); }
+  30% { transform: translate(-5px, 5px); }
+  40% { transform: translate(5px, 5px); }
+  50% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, -3px); }
+  70% { transform: translate(-3px, 3px); }
+  80% { transform: translate(3px, 3px); }
+  90% { transform: translate(-1px, -1px); }
+}
+
+/* ==================== 倍数飘字 ==================== */
+.multiplier-float {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: #fdcb6e;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  animation: multiplierFloat 1.5s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes multiplierFloat {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -80%) scale(1);
+  }
+}
+
+/* ==================== 金币掉落 ==================== */
+.coin-drop {
+  position: fixed;
+  font-size: 24px;
+  animation: coinDrop 1.5s ease forwards;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+@keyframes coinDrop {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(200px) rotate(720deg);
+  }
+}
+
+/* ==================== 按钮波纹 ==================== */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
+  opacity: 0;
+}
+
+.btn-ripple:active::after {
+  width: 200%;
+  height: 200%;
+  opacity: 0;
+}
+
+/* ==================== 淡入淡出 ==================== */
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ==================== 弹出动画 ==================== */
+.pop-in {
+  animation: popIn 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==================== 胜利/失败动画 ==================== */
+.result-appear {
+  animation: resultAppear 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes resultAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-10deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* ==================== 聊天气泡 ==================== */
+.chat-bubble {
+  animation: chatBubble 0.3s ease forwards;
+}
+
+@keyframes chatBubble {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

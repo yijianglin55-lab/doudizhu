@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: doudizhu
+    runtime: node
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: node server/app.js
+    envVars:
+      - key: NODE_ENV
+        value: production

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>房间 - 斗地主</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="rotate-device-overlay">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-text">请旋转设备至横屏体验游戏</div>
+  </div>
+
+  <div class="room-container">
+    <div class="room-title">🏠 房间等待</div>
+    <div class="room-code" id="room-code">------</div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.5);">房间号（分享给好友加入）</div>
+
+    <div class="room-players">
+      <div class="room-player-slot" id="slot-0">
+        <div class="avatar" style="width:50px;height:50px;font-size:22px;" id="av-0">?</div>
+        <div class="player-name" id="pname-0">等待加入...</div>
+        <div class="player-status" style="font-size:12px;color:rgba(255,255,255,0.4);" id="pstatus-0">-</div>
+      </div>
+      <div class="room-player-slot" id="slot-1">
+        <div class="avatar" style="width:50px;height:50px;font-size:22px;" id="av-1">?</div>
+        <div class="player-name" id="pname-1">等待加入...</div>
+        <div class="player-status" style="font-size:12px;color:rgba(255,255,255,0.4);" id="pstatus-1">-</div>
+      </div>
+      <div class="room-player-slot" id="slot-2">
+        <div class="avatar" style="width:50px;height:50px;font-size:22px;" id="av-2">?</div>
+        <div class="player-name" id="pname-2">等待加入...</div>
+        <div class="player-status" style="font-size:12px;color:rgba(255,255,255,0.4);" id="pstatus-2">-</div>
+      </div>
+    </div>
+
+    <div class="room-actions">
+      <button class="btn btn-primary btn-lg" id="btn-ready">准备</button>
+      <button class="btn btn-success btn-lg hidden" id="btn-start">开始游戏</button>
+      <button class="btn btn-secondary" id="btn-leave">离开房间</button>
+      <button class="btn btn-danger hidden" id="btn-dissolve">解散房间</button>
+    </div>
+
+    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:10px;">
+      等待所有玩家准备后，房主可开始游戏
+    </div>
+
+    <!-- 状态提示 -->
+    <div id="status-msg" style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:5px;">连接中...</div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/ws.js"></script>
+  <script>
+    (function() {
+      'use strict';
+
+      var token = Utils.storage.get('token');
+      if (!token) { location.href = 'login.html'; return; }
+
+      var myUser = Utils.storage.get('user');
+      var statusEl = document.getElementById('status-msg');
+      var inRoom = false;
+
+      // 更新房间显示
+      function updateRoom(gs) {
+        if (!gs) return;
+        inRoom = true;
+        statusEl.textContent = '';
+
+        var isOwner = gs.players.length > 0 && gs.players[0].userId === (myUser && myUser.id);
+
+        for (var i = 0; i < 3; i++) {
+          var slot = document.getElementById('slot-' + i);
+          var av = document.getElementById('av-' + i);
+          var pn = document.getElementById('pname-' + i);
+          var ps = document.getElementById('pstatus-' + i);
+          var p = gs.players[i];
+
+          if (p) {
+            slot.className = 'room-player-slot occupied' + (p.isReady ? ' ready' : '');
+            av.textContent = Utils.getAvatarLetter(p.nickname);
+            pn.textContent = p.nickname || '玩家';
+            ps.textContent = (i === 0) ? '👑 房主' : (p.isReady ? '✅ 已准备' : '等待准备');
+          } else {
+            slot.className = 'room-player-slot';
+            av.textContent = '?';
+            pn.textContent = '等待加入...';
+            ps.textContent = '-';
+          }
+        }
+
+        document.getElementById('btn-dissolve').classList.toggle('hidden', !isOwner);
+        document.getElementById('btn-start').classList.toggle('hidden', !isOwner);
+      }
+
+      // ===== 事件（先注册再连接）=====
+
+      WS.on('auth_result', function(data) {
+        console.log('[Room] 认证:', data.success, 'gameState:', !!data.gameState);
+        if (!data.success) {
+          statusEl.textContent = '认证失败，请重新登录';
+          return;
+        }
+        // 关键：如果auth_result带了gameState，直接显示房间
+        if (data.gameState) {
+          console.log('[Room] 从认证恢复房间, roomId:', data.gameState.roomId);
+          updateRoom(data.gameState);
+        } else {
+          statusEl.textContent = '等待房间数据...';
+        }
+      });
+
+      WS.on('player_joined', function(data) {
+        console.log('[Room] 玩家加入');
+        updateRoom(data.gameState);
+      });
+
+      WS.on('player_left', function(data) {
+        console.log('[Room] 玩家离开');
+        updateRoom(data.gameState);
+      });
+
+      WS.on('player_ready', function(data) {
+        console.log('[Room] 玩家准备');
+        updateRoom(data.gameState);
+      });
+
+      WS.on('game_started', function() {
+        console.log('[Room] 游戏开始');
+        Utils.toast('游戏开始！', 'success');
+        setTimeout(function() { location.href = 'game.html'; }, 500);
+      });
+
+      WS.on('room_dissolved', function() {
+        Utils.toast('房间已解散', 'info');
+        setTimeout(function() { location.href = 'lobby.html'; }, 500);
+      });
+
+      WS.on('kicked', function(data) {
+        Utils.toast(data.msg || '你已被踢出', 'warning');
+        setTimeout(function() { location.href = 'lobby.html'; }, 500);
+      });
+
+      WS.on('room_left', function() {
+        location.href = 'lobby.html';
+      });
+
+      WS.on('error', function(data) {
+        console.error('[Room] 错误:', data.msg);
+        Utils.toast(data.msg, 'error');
+      });
+
+      // 连接
+      statusEl.textContent = '连接中...';
+      WS.connect();
+
+      // ===== 按钮 =====
+      document.getElementById('btn-ready').onclick = function() {
+        if (!WS.isConnected) { Utils.toast('未连接', 'error'); return; }
+        console.log('[Room] 发送准备');
+        WS.ready();
+      };
+      document.getElementById('btn-start').onclick = function() { WS.startGame(); };
+      document.getElementById('btn-leave').onclick = function() {
+        console.log('[Room] 发送离开');
+        WS.leaveRoom();
+      };
+      document.getElementById('btn-dissolve').onclick = function() {
+        if (confirm('确定解散房间？')) WS.dissolveRoom();
+      };
+
+    })();
+  </script>
+</body>
+</html>
