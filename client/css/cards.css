@@ -1,30 +1,35 @@
 /**
- * 扑克牌 - 手机适配（vw单位）
+ * 扑克牌样式
  */
 
-/* ===== 手牌 ===== */
+/* ===== 桌面端手牌 ===== */
 .card {
-  width:16vw; height:23vw; background:#fff; border-radius:1.5vw;
+  width:80px; height:115px; background:#fff; border-radius:7px;
   position:relative; cursor:pointer;
   transition:margin-top 0.15s ease,box-shadow 0.15s ease;
-  box-shadow:0 0.5vw 2vw rgba(0,0,0,0.35);
+  box-shadow:0 2px 8px rgba(0,0,0,0.35);
   display:flex; flex-direction:column; overflow:hidden;
   margin-top:0; z-index:1;
 }
-.card:hover { margin-top:-1vw; box-shadow:0 1vw 3vw rgba(0,0,0,0.4); z-index:2; }
+
+/* 桌面端悬停效果 */
+@media (hover: hover) {
+  .card:hover { margin-top:-8px; box-shadow:0 4px 12px rgba(0,0,0,0.4); z-index:2; }
+}
+
 .card.selected {
-  margin-top:-6vw !important;
-  box-shadow:0 2vw 5vw rgba(233,69,96,0.5);
-  border:0.5vw solid #e94560; z-index:10;
+  margin-top:-25px !important;
+  box-shadow:0 8px 20px rgba(233,69,96,0.5);
+  border:2px solid #e94560; z-index:10;
 }
 
 /* 牌角 */
 .card-corner { position:absolute; display:flex; flex-direction:column; align-items:center; line-height:1; }
-.card-corner-tl { top:1vw; left:1.2vw; }
-.card-corner-br { bottom:1vw; right:1.2vw; transform:rotate(180deg); }
-.card-value { font-size:3.2vw; font-weight:bold; }
-.card-suit-small { font-size:2.4vw; }
-.card-suit-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:6.5vw; }
+.card-corner-tl { top:4px; left:5px; }
+.card-corner-br { bottom:4px; right:5px; transform:rotate(180deg); }
+.card-value { font-size:15px; font-weight:bold; }
+.card-suit-small { font-size:11px; }
+.card-suit-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:30px; }
 
 /* 花色颜色 */
 .card.spade,.card.club { color:#1a1a2e; }
@@ -33,35 +38,86 @@
 /* 大小王 */
 .card.joker-small { background:linear-gradient(135deg,#1a1a2e,#2c3e50); color:#3498db; }
 .card.joker-big { background:linear-gradient(135deg,#4a0e0e,#8b0000); color:#e94560; }
-.card.joker-small .card-suit-center,.card.joker-big .card-suit-center { font-size:7.5vw; }
+.card.joker-small .card-suit-center,.card.joker-big .card-suit-center { font-size:34px; }
 
 /* 牌背面 */
 .card-back {
-  width:16vw; height:23vw;
+  width:80px; height:115px;
   background:linear-gradient(135deg,#2c3e50,#34495e);
-  border-radius:1.5vw; position:relative; overflow:hidden;
-  box-shadow:0 0.5vw 2vw rgba(0,0,0,0.35);
+  border-radius:7px; position:relative; overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.35);
 }
 .card-back::before {
-  content:''; position:absolute; top:1vw; left:1vw; right:1vw; bottom:1vw;
-  border:0.4vw solid rgba(255,255,255,0.1); border-radius:1vw;
+  content:''; position:absolute; top:4px; left:4px; right:4px; bottom:4px;
+  border:2px solid rgba(255,255,255,0.1); border-radius:5px;
 }
 
-/* ===== 出的牌（小号）===== */
-.played-cards { display:flex; justify-content:center; flex-wrap:wrap; gap:0.8vw; }
-.played-cards .card { width:11vw; height:16vw; cursor:default; }
+/* ===== 桌面端出的牌 ===== */
+.played-cards { display:flex; justify-content:center; flex-wrap:wrap; gap:3px; }
+.played-cards .card { width:55px; height:78px; cursor:default; }
 .played-cards .card:hover { margin-top:0; }
-.played-cards .card .card-value { font-size:2.4vw; }
-.played-cards .card .card-suit-small { font-size:1.8vw; }
-.played-cards .card .card-suit-center { font-size:4vw; }
+.played-cards .card .card-value { font-size:12px; }
+.played-cards .card .card-suit-small { font-size:9px; }
+.played-cards .card .card-suit-center { font-size:20px; }
 
-/* ===== 底牌 ===== */
-.landlord-cards-display { display:flex; gap:1.5vw; justify-content:center; }
-.landlord-cards-display .card { width:11vw; height:16vw; }
+/* 桌面端底牌 */
+.landlord-cards-display { display:flex; gap:6px; justify-content:center; }
+.landlord-cards-display .card { width:55px; height:78px; }
 
 /* ===== 动画 ===== */
 .card-deal-anim { animation:cardDeal 0.4s cubic-bezier(0.23,1,0.32,1) forwards; opacity:0; }
 @keyframes cardDeal {
-  0%{opacity:0;transform:translate(0,-30vw) scale(0.5) rotate(-15deg)}
+  0%{opacity:0;transform:translate(0,-150px) scale(0.5) rotate(-15deg)}
   100%{opacity:1;transform:translate(0,0) scale(1) rotate(0)}
+}
+
+/* ============================================================
+   手机端适配（竖屏强制横屏后）
+   ============================================================ */
+@media screen and (orientation: portrait) and (max-width: 1024px) {
+
+  /* 手牌：紧凑，无悬停 */
+  .card {
+    width:12vw; height:17vw; border-radius:1vw;
+    box-shadow:0 0.3vw 1vw rgba(0,0,0,0.35);
+    margin-top:0;
+  }
+  /* 手机端禁用悬停 */
+  .card:hover { margin-top:0; box-shadow:0 0.3vw 1vw rgba(0,0,0,0.35); }
+  .card.selected {
+    margin-top:-3.5vw !important;
+    box-shadow:0 1.5vw 3vw rgba(233,69,96,0.5);
+    border:0.4vw solid #e94560;
+  }
+
+  .card-corner-tl { top:0.8vw; left:1vw; }
+  .card-corner-br { bottom:0.8vw; right:1vw; }
+  .card-value { font-size:2.6vw; }
+  .card-suit-small { font-size:2vw; }
+  .card-suit-center { font-size:5vw; }
+
+  .card.joker-small .card-suit-center,.card.joker-big .card-suit-center { font-size:5.5vw; }
+
+  .card-back { width:12vw; height:17vw; border-radius:1vw; }
+  .card-back::before { top:0.6vw; left:0.6vw; right:0.6vw; bottom:0.6vw; border-width:0.3vw; border-radius:0.8vw; }
+
+  /* 出的牌：更小 */
+  .played-cards .card { width:8vw; height:11.5vw; }
+  .played-cards .card .card-value { font-size:1.8vw; }
+  .played-cards .card .card-suit-small { font-size:1.4vw; }
+  .played-cards .card .card-suit-center { font-size:3.2vw; }
+
+  /* 底牌：更小 */
+  .landlord-cards-display .card { width:8vw; height:11.5vw; }
+
+  /* 牌之间更紧凑 */
+  .cards-row .card { margin-left:-3vw; }
+}
+
+/* ===== 桌面端大屏 ===== */
+@media screen and (min-width: 1200px) and (orientation: landscape) {
+  .card { width:85px; height:122px; }
+  .card .card-value { font-size:17px; }
+  .card .card-suit-center { font-size:34px; }
+  .played-cards .card { width:60px; height:86px; }
 }

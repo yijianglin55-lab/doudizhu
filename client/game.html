@@ -31,8 +31,8 @@
       <!-- 倍数 -->
       <div class="multiplier-badge" id="mult-badge">×1</div>
 
-      <!-- 出牌倒计时（跟随当前玩家） -->
-      <div id="turn-timer" class="hidden" style="position:absolute;z-index:60;background:rgba(0,0,0,0.7);color:#fdcb6e;font-size:22px;font-weight:bold;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fdcb6e;">
+      <!-- 出牌倒计时 -->
+      <div id="turn-timer" class="turn-timer-mobile hidden">
         <span id="turn-timer-num">20</span>
       </div>
 
@@ -101,15 +101,6 @@
         </div>
       </div>
 
-      <!-- 聊天 -->
-      <div class="chat-box">
-        <div class="chat-messages" id="chat-msgs"></div>
-        <div class="chat-input-area">
-          <input type="text" id="chat-input" placeholder="消息..." maxlength="50">
-          <button class="btn btn-sm btn-primary" id="btn-chat">发送</button>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -161,8 +152,6 @@
         document.getElementById('btn-play').onclick = function() { self.onPlay(); };
         document.getElementById('btn-pass').onclick = function() { self.onPass(); };
         document.getElementById('btn-hint').onclick = function() { self.onHint(); };
-        document.getElementById('btn-chat').onclick = function() { self.onChat(); };
-        document.getElementById('chat-input').onkeypress = function(e) { if(e.key==='Enter') self.onChat(); };
 
         // ===== 事件 =====
         WS.on('auth_result', function(data) {
@@ -223,7 +212,6 @@
           } else { Utils.toast('没有能压过的牌', 'warning'); }
         });
 
-        WS.on('chat_message', function(data) { self.addChat(data.nickname, data.message); });
 
         WS.on('game_over', function(data) {
           self.isPlaying = false; self.isBidding = false;
@@ -302,7 +290,8 @@
       playTimer: null,
       playTimeLeft: 20,
 
-      // 定位倒计时到当前玩家旁边
+      isMobile: /Mobi|Android|iPhone/i.test(navigator.userAgent),
+
       positionTimer: function() {
         var timerEl = document.getElementById('turn-timer');
         if (!timerEl) return;
@@ -310,15 +299,22 @@
           timerEl.classList.add('hidden');
           return;
         }
-        var key = this.relKeys[this.getRel(this.currentPlayer)];
-        var infoEl = document.getElementById('info-' + key);
-        if (!infoEl) { timerEl.classList.add('hidden'); return; }
-
-        var rect = infoEl.getBoundingClientRect();
-        // 放在玩家信息右侧
-        timerEl.style.left = (rect.right + 8) + 'px';
-        timerEl.style.top = (rect.top + rect.height / 2 - 22) + 'px';
         timerEl.classList.remove('hidden');
+
+        // 桌面端：用JS定位到当前玩家旁边
+        if (!this.isMobile) {
+          var key = this.relKeys[this.getRel(this.currentPlayer)];
+          var infoEl = document.getElementById('info-' + key);
+          if (infoEl) {
+            var rect = infoEl.getBoundingClientRect();
+            timerEl.style.position = 'fixed';
+            timerEl.style.left = (rect.right + 8) + 'px';
+            timerEl.style.top = (rect.top + rect.height / 2 - 22) + 'px';
+            timerEl.style.bottom = 'auto';
+            timerEl.style.transform = 'none';
+          }
+        }
+        // 手机端：用CSS固定位置（bottom:24vw, left:50%）
       },
 
       startPlayCountdown: function() {
@@ -417,13 +413,6 @@
       },
       onPass: function() { WS.pass(); },
       onHint: function() { WS.hint(); },
-      onChat: function() {
-        var input = document.getElementById('chat-input');
-        var msg = input.value.trim();
-        if (!msg) return;
-        WS.chat(msg);
-        input.value = '';
-      },
 
       onCardPlayed: function(data) {
         this.showPlayedCards(data.playerIndex, data.cards);
@@ -476,14 +465,6 @@
         if (isWin) Effects.coinDrop(innerWidth/2, innerHeight/3, 15);
       },
 
-      addChat: function(name, msg) {
-        var el = document.getElementById('chat-msgs');
-        var div = document.createElement('div');
-        div.className = 'chat-message chat-bubble';
-        div.innerHTML = '<strong>' + name + ':</strong> ' + msg;
-        el.appendChild(div);
-        el.scrollTop = el.scrollHeight;
-      }
     };
 
     Game.init();
