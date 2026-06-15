@@ -25,7 +25,7 @@
   }
 }
 
-/* ===== 登录/注册 ===== */
+/* ===== 登录/注册（桌面端） ===== */
 .auth-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:20px; }
 .auth-box { width:100%; max-width:380px; background:rgba(255,255,255,0.05); border-radius:16px; border:1px solid rgba(255,255,255,0.1); padding:30px; }
 .auth-title { font-size:26px; font-weight:bold; text-align:center; margin-bottom:28px; background:linear-gradient(135deg,#e94560,#fdcb6e); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
@@ -81,3 +81,49 @@
 .stat-card { background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; text-align:center; border:1px solid rgba(255,255,255,0.1); }
 .stat-card-value { font-size:28px; font-weight:bold; color:#fdcb6e; }
 .stat-card-label { font-size:12px; color:rgba(255,255,255,0.5); margin-top:5px; }
+
+/* ============================================================
+   手机端（竖屏强制横屏后）
+   ============================================================ */
+@media screen and (orientation: portrait) and (max-width: 1024px) {
+
+  /* 登录/注册 */
+  .auth-container { padding:3vw; }
+  .auth-box { max-width:70vw; padding:4vw; border-radius:3vw; }
+  .auth-title { font-size:5vw; margin-bottom:4vw; }
+  .auth-form { gap:2.5vw; }
+  .auth-form .input { padding:2.5vw 3vw; font-size:3.2vw; border-radius:2vw; }
+  .auth-form .btn { padding:2.5vw; font-size:3.5vw; border-radius:2vw; margin-top:1.5vw; }
+  .auth-footer { margin-top:3vw; font-size:2.8vw; }
+
+  /* 大厅 */
+  .lobby-container { padding:2vw; gap:2vw; }
+  .lobby-header { padding:1.5vw 2.5vw; border-radius:2.5vw; }
+  .lobby-content { gap:2vw; }
+  .lobby-sidebar { width:30vw; gap:1.5vw; }
+  .lobby-actions { gap:1.5vw; }
+  .lobby-actions .btn { padding:2vw 3.5vw; font-size:3.2vw; }
+  .room-item { padding:2vw 2.5vw; border-radius:1.5vw; }
+
+  /* 房间 */
+  .room-container { padding:3vw; gap:4vw; }
+  .room-title { font-size:4.5vw; }
+  .room-code { font-size:8vw; letter-spacing:1.5vw; }
+  .room-players { gap:4vw; }
+  .room-player-slot { padding:3vw; min-width:20vw; border-radius:2.5vw; gap:1.5vw; }
+  .room-actions { gap:2vw; }
+  .room-actions .btn { padding:2vw 4vw; font-size:3.2vw; }
+
+  /* 个人信息 */
+  .profile-container { padding:3vw; gap:3vw; }
+  .profile-avatar { width:14vw; height:14vw; font-size:6vw; }
+  .profile-stats { gap:4vw; }
+  .stat-value { font-size:4.5vw; }
+  .stat-label { font-size:2.5vw; }
+
+  /* 后台管理 */
+  .admin-header { padding:1.5vw 2.5vw; }
+  .admin-tab { padding:1.5vw 2.5vw; font-size:2.5vw; border-radius:1.5vw; }
+  .admin-content { padding:2vw; }
+  .admin-table th,.admin-table td { padding:1.5vw 2.5vw; font-size:2.5vw; }
+}
