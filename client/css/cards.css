@@ -107,10 +107,10 @@
   .played-cards .card .card-suit-small { font-size:1.4vw; }
   .played-cards .card .card-suit-center { font-size:3.2vw; }
 
-  /* 底牌：四角只有数字，中心显示花色 */
+  /* 底牌：左上数字+中心花色 */
   .landlord-cards .card { width:9vw; height:13vw; }
   .landlord-cards .card .card-corner-tl { top:0.5vw; left:0.8vw; }
-  .landlord-cards .card .card-corner-br { bottom:0.5vw; right:0.8vw; }
+  .landlord-cards .card .card-corner-br { display:none; }
   .landlord-cards .card .card-value { font-size:3vw; }
   .landlord-cards .card .card-suit-small { display:none; }
   .landlord-cards .card .card-suit-center { font-size:5vw; }
