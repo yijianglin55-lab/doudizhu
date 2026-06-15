@@ -55,6 +55,43 @@ router.post('/register', async (req, res) => {
 });
 
 /**
+ * 游客登录
+ * POST /api/auth/guest
+ * body: { nickname }
+ */
+router.post('/guest', async (req, res) => {
+  try {
+    const { nickname } = req.body;
+    if (!nickname || nickname.trim().length === 0) {
+      return res.json({ code: 1, msg: '请输入昵称', data: null });
+    }
+    if (nickname.length > 20) {
+      return res.json({ code: 1, msg: '昵称不能超过20个字符', data: null });
+    }
+
+    // 创建游客账号（随机用户名，1000金币）
+    const guestName = 'guest_' + Date.now().toString(36);
+    const user = await users.createUser(guestName, Math.random().toString(36), nickname.trim());
+    const { setGold } = require('../database/users');
+    setGold(user.id, 1000);
+
+    const token = generateToken(user.id);
+
+    res.json({
+      code: 0,
+      msg: '游客登录成功',
+      data: {
+        token,
+        user: { id: user.id, username: guestName, nickname: nickname.trim(), gold: 1000, wins: 0, losses: 0, totalGames: 0 },
+        isGuest: true,
+      },
+    });
+  } catch (err) {
+    res.json({ code: 1, msg: err.message || '登录失败', data: null });
+  }
+});
+
+/**
  * 用户登录
  * POST /api/auth/login
  * body: { username, password }
