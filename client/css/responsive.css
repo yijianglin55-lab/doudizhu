@@ -26,53 +26,58 @@
 }
 
 /* ===== 登录/注册 ===== */
-.auth-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:4vw; }
-.auth-box { width:100%; max-width:85vw; background:rgba(255,255,255,0.05); border-radius:4vw; border:1px solid rgba(255,255,255,0.1); padding:6vw; }
-.auth-title { font-size:6vw; font-weight:bold; text-align:center; margin-bottom:6vw; background:linear-gradient(135deg,#e94560,#fdcb6e); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-.auth-form { display:flex; flex-direction:column; gap:3vw; }
-.auth-form .btn { width:100%; margin-top:2vw; }
-.auth-footer { text-align:center; margin-top:4vw; font-size:3vw; color:rgba(255,255,255,0.5); }
+.auth-container { width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:20px; }
+.auth-box { width:100%; max-width:380px; background:rgba(255,255,255,0.05); border-radius:16px; border:1px solid rgba(255,255,255,0.1); padding:30px; }
+.auth-title { font-size:26px; font-weight:bold; text-align:center; margin-bottom:28px; background:linear-gradient(135deg,#e94560,#fdcb6e); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.auth-form { display:flex; flex-direction:column; gap:14px; }
+.auth-form .btn { width:100%; margin-top:8px; padding:12px; font-size:15px; }
+.auth-footer { text-align:center; margin-top:18px; font-size:13px; color:rgba(255,255,255,0.5); }
 
 /* ===== 大厅 ===== */
-.lobby-container { width:100%; height:100%; display:flex; flex-direction:column; padding:3vw; gap:3vw; }
-.lobby-header { display:flex; align-items:center; justify-content:space-between; padding:2.5vw 3vw; background:rgba(0,0,0,0.3); border-radius:3vw; flex-shrink:0; flex-wrap:wrap; gap:2vw; }
-.lobby-content { flex:1; display:flex; gap:3vw; overflow:hidden; }
-.lobby-sidebar { width:35vw; display:flex; flex-direction:column; gap:2vw; flex-shrink:0; }
-.lobby-main { flex:1; display:flex; flex-direction:column; gap:2vw; min-width:0; }
-.lobby-actions { display:flex; gap:2vw; flex-wrap:wrap; }
-.room-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:2vw; }
-.room-item { display:flex; align-items:center; justify-content:space-between; padding:2.5vw 3vw; background:rgba(255,255,255,0.05); border-radius:2vw; border:1px solid rgba(255,255,255,0.1); }
+.lobby-container { width:100%; height:100%; display:flex; flex-direction:column; padding:15px; gap:15px; }
+.lobby-header { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:rgba(0,0,0,0.3); border-radius:12px; flex-shrink:0; gap:10px; }
+.lobby-content { flex:1; display:flex; gap:15px; overflow:hidden; }
+.lobby-sidebar { width:200px; display:flex; flex-direction:column; gap:10px; flex-shrink:0; }
+.lobby-main { flex:1; display:flex; flex-direction:column; gap:10px; min-width:0; }
+.lobby-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.lobby-actions .btn { padding:12px 24px; font-size:15px; }
+.room-list { flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; }
+.room-item { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:rgba(255,255,255,0.05); border-radius:8px; border:1px solid rgba(255,255,255,0.1); transition:all 0.2s; }
+.room-item:hover { background:rgba(255,255,255,0.08); border-color:rgba(233,69,96,0.3); }
 
 /* ===== 房间 ===== */
-.room-container { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5vw; padding:4vw; }
-.room-title { font-size:5vw; font-weight:bold; }
-.room-code { font-size:9vw; font-weight:bold; color:#fdcb6e; letter-spacing:2vw; }
-.room-players { display:flex; gap:5vw; }
-.room-player-slot { display:flex; flex-direction:column; align-items:center; gap:2vw; padding:4vw; background:rgba(255,255,255,0.05); border-radius:3vw; border:0.5vw dashed rgba(255,255,255,0.2); min-width:22vw; }
+.room-container { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:25px; padding:20px; }
+.room-title { font-size:22px; font-weight:bold; }
+.room-code { font-size:42px; font-weight:bold; color:#fdcb6e; letter-spacing:8px; }
+.room-players { display:flex; gap:35px; }
+.room-player-slot { display:flex; flex-direction:column; align-items:center; gap:10px; padding:20px; background:rgba(255,255,255,0.05); border-radius:12px; border:2px dashed rgba(255,255,255,0.2); min-width:130px; transition:all 0.3s; }
 .room-player-slot.occupied { border-style:solid; border-color:rgba(233,69,96,0.3); }
 .room-player-slot.ready { border-color:#00b894; background:rgba(0,184,148,0.1); }
-.room-actions { display:flex; gap:3vw; flex-wrap:wrap; }
+.room-actions { display:flex; gap:12px; flex-wrap:wrap; }
+.room-actions .btn { padding:12px 28px; font-size:15px; }
 
 /* ===== 个人信息 ===== */
-.profile-container { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; padding:4vw; gap:4vw; overflow-y:auto; }
-.profile-header { display:flex; flex-direction:column; align-items:center; gap:3vw; }
-.profile-avatar { width:16vw; height:16vw; font-size:7vw; }
-.profile-stats { display:flex; gap:5vw; flex-wrap:wrap; justify-content:center; }
+.profile-container { width:100%; height:100%; display:flex; flex-direction:column; align-items:center; padding:20px; gap:20px; overflow-y:auto; }
+.profile-header { display:flex; flex-direction:column; align-items:center; gap:15px; }
+.profile-avatar { width:80px; height:80px; font-size:36px; }
+.profile-stats { display:flex; gap:30px; flex-wrap:wrap; justify-content:center; }
 .stat-item { text-align:center; }
-.stat-value { font-size:5vw; font-weight:bold; color:#fdcb6e; }
-.stat-label { font-size:2.8vw; color:rgba(255,255,255,0.5); margin-top:1vw; }
+.stat-value { font-size:26px; font-weight:bold; color:#fdcb6e; }
+.stat-label { font-size:13px; color:rgba(255,255,255,0.5); margin-top:5px; }
 
 /* ===== 后台管理 ===== */
 .admin-layout { width:100%; height:100%; display:flex; flex-direction:column; }
-.admin-header { display:flex; align-items:center; justify-content:space-between; padding:2vw 3vw; background:rgba(0,0,0,0.3); border-bottom:1px solid rgba(255,255,255,0.1); flex-wrap:wrap; gap:2vw; }
-.admin-tabs { display:flex; gap:1vw; }
-.admin-tab { padding:2vw 3vw; border-radius:2vw; cursor:pointer; font-size:3vw; background:transparent; color:rgba(255,255,255,0.6); border:none; }
+.admin-header { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; background:rgba(0,0,0,0.3); border-bottom:1px solid rgba(255,255,255,0.1); gap:10px; }
+.admin-tabs { display:flex; gap:4px; }
+.admin-tab { padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; background:transparent; color:rgba(255,255,255,0.6); border:none; transition:all 0.2s; }
+.admin-tab:hover { background:rgba(255,255,255,0.05); }
 .admin-tab.active { background:#e94560; color:#fff; }
-.admin-content { flex:1; padding:3vw; overflow-y:auto; }
+.admin-content { flex:1; padding:20px; overflow-y:auto; }
 .admin-table { width:100%; border-collapse:collapse; }
-.admin-table th,.admin-table td { padding:2vw 3vw; text-align:left; border-bottom:1px solid rgba(255,255,255,0.1); font-size:2.8vw; }
+.admin-table th,.admin-table td { padding:8px 12px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.1); font-size:13px; }
 .admin-table th { background:rgba(0,0,0,0.2); font-weight:600; }
-.stat-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(28vw,1fr)); gap:3vw; margin-bottom:4vw; }
-.stat-card { background:rgba(255,255,255,0.05); border-radius:3vw; padding:4vw; text-align:center; border:1px solid rgba(255,255,255,0.1); }
-.stat-card-value { font-size:6vw; font-weight:bold; color:#fdcb6e; }
-.stat-card-label { font-size:2.8vw; color:rgba(255,255,255,0.5); margin-top:1vw; }
+.admin-table tr:hover { background:rgba(255,255,255,0.03); }
+.stat-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:15px; margin-bottom:20px; }
+.stat-card { background:rgba(255,255,255,0.05); border-radius:12px; padding:20px; text-align:center; border:1px solid rgba(255,255,255,0.1); }
+.stat-card-value { font-size:28px; font-weight:bold; color:#fdcb6e; }
+.stat-card-label { font-size:12px; color:rgba(255,255,255,0.5); margin-top:5px; }
