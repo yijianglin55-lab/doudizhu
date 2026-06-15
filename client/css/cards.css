@@ -107,8 +107,13 @@
   .played-cards .card .card-suit-small { font-size:1.4vw; }
   .played-cards .card .card-suit-center { font-size:3.2vw; }
 
-  /* 底牌：更小 */
-  .landlord-cards-display .card { width:8vw; height:11.5vw; }
+  /* 底牌：只显示中间花色+数字 */
+  .landlord-cards .card { width:9vw; height:13vw; }
+  .landlord-cards .card .card-corner-tl { top:50%; left:50%; transform:translate(-50%,-85%); }
+  .landlord-cards .card .card-corner-br { display:none; }
+  .landlord-cards .card .card-suit-center { font-size:5vw; top:60%; }
+  .landlord-cards .card .card-value { font-size:3.5vw; }
+  .landlord-cards .card .card-suit-small { font-size:2.5vw; }
 
   /* 牌之间更紧凑 */
   .cards-row .card { margin-left:-3vw; }

@@ -11,7 +11,6 @@
 
 .landlord-cards { position:absolute; top:40px; left:50%; transform:translateX(-50%); display:flex; gap:5px; z-index:10; }
 
-.multiplier-badge { position:absolute; top:50%; right:12px; transform:translateY(-50%); background:rgba(233,69,96,0.9); padding:8px 18px; border-radius:18px; font-size:20px; font-weight:bold; z-index:50; }
 
 .player-info { display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.6); padding:8px 14px; border-radius:20px; border:2px solid rgba(255,255,255,0.12); position:relative; white-space:nowrap; }
 .player-info.active { border-color:#fdcb6e; box-shadow:0 0 14px rgba(253,203,110,0.5); }
@@ -92,7 +91,6 @@
   .landlord-cards { top:6vw; gap:1vw; }
   .landlord-cards .card { width:7vw; height:10vw; }
 
-  .multiplier-badge { right:2vw; padding:1.5vw 3vw; border-radius:3vw; font-size:3.5vw; }
 
   .player-info { padding:1.5vw 2.5vw; gap:1.5vw; border-radius:3vw; border-width:0.4vw; }
   .pname { font-size:2.5vw; max-width:12vw; }

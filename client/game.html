@@ -28,9 +28,6 @@
         <div class="info-chip">倍数: <span id="info-mult">1</span></div>
       </div>
 
-      <!-- 倍数 -->
-      <div class="multiplier-badge" id="mult-badge">×1</div>
-
       <!-- 左侧对手 -->
       <div class="opponent-zone left">
         <div class="player-info" id="info-left">
@@ -380,7 +377,6 @@
 
       updateMultiplier: function() {
         document.getElementById('info-mult').textContent = this.multiplier;
-        document.getElementById('mult-badge').textContent = '×' + this.multiplier;
       },
 
       getRel: function(absIdx) { return (absIdx - this.myIndex + 3) % 3; },
