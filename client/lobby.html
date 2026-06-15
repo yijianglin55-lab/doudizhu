@@ -279,12 +279,7 @@
       document.getElementById('btn-refresh').onclick = loadRooms;
       document.getElementById('btn-logout').onclick = function() {
         WS.disconnect();
-        var guestToken = Utils.storage.get('guest_token');
         Utils.storage.remove('token');
-        // 游客保留绑定，普通用户清除
-        if (!guestToken) {
-          Utils.storage.remove('user');
-        }
         location.href = 'login.html';
       };
 

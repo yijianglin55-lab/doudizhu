@@ -13,16 +13,7 @@
     <div class="rotate-text">请旋转设备至横屏体验游戏</div>
   </div>
 
-  <!-- 已登录/已绑定游客：自动跳转 -->
-  <div id="auto-login" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
-    <div style="text-align:center;">
-      <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
-      <div style="margin-top:15px;color:rgba(255,255,255,0.5);font-size:14px;">正在进入...</div>
-    </div>
-  </div>
-
-  <!-- 登录表单 -->
-  <div class="auth-container" id="login-page" style="display:none;">
+  <div class="auth-container">
     <div class="auth-box">
       <div class="auth-title">🃏 斗地主</div>
 
@@ -34,10 +25,7 @@
 
       <div style="text-align:center;margin:14px 0;color:rgba(255,255,255,0.25);font-size:12px;">── 或 ──</div>
 
-      <div class="auth-form" id="guest-section">
-        <input type="text" class="input" id="guest-nickname" placeholder="输入昵称，游客快速进入" maxlength="20">
-        <button type="button" class="btn btn-success" id="btn-guest">🎮 游客进入</button>
-      </div>
+      <button type="button" class="btn btn-success" style="width:100%;" id="btn-guest">🎮 游客进入</button>
 
       <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.35);">
         游客 1000 金币 · 注册送 10000 金币
@@ -53,28 +41,12 @@
   <script src="js/api.js"></script>
   <script>
     (function() {
-      'use strict';
-
+      // 已有普通登录态
       var token = Utils.storage.get('token');
-      var guestToken = Utils.storage.get('guest_token');
-      var savedUser = Utils.storage.get('user');
-
-      // 1. 已有普通登录 → 直接进大厅
-      if (token && savedUser) {
+      if (token) {
         location.href = 'lobby.html';
         return;
       }
-
-      // 2. 已绑定游客 → 自动登录
-      if (guestToken && savedUser) {
-        Utils.storage.set('token', guestToken);
-        location.href = 'lobby.html';
-        return;
-      }
-
-      // 3. 没有任何账号 → 显示登录页
-      document.getElementById('auto-login').style.display = 'none';
-      document.getElementById('login-page').style.display = '';
 
       // 普通登录
       document.getElementById('login-form').addEventListener('submit', async function(e) {
@@ -87,8 +59,6 @@
         btn.disabled = true; btn.textContent = '登录中...';
         var result = await API.login(username, password);
         if (result.code === 0) {
-          // 清除游客绑定
-          Utils.storage.remove('guest_token');
           Utils.storage.set('token', result.data.token);
           Utils.storage.set('user', result.data.user);
           Utils.toast('登录成功', 'success');
@@ -99,27 +69,16 @@
         }
       });
 
-      // 游客登录
-      document.getElementById('btn-guest').addEventListener('click', async function() {
-        var nickname = document.getElementById('guest-nickname').value.trim();
-        if (!nickname) { Utils.toast('请输入昵称', 'warning'); return; }
-
-        var btn = document.getElementById('btn-guest');
-        btn.disabled = true; btn.textContent = '进入中...';
-        var result = await API.request('/api/auth/guest', {
-          method: 'POST',
-          body: JSON.stringify({ nickname: nickname }),
-        });
-        if (result.code === 0) {
-          // 绑定游客到此浏览器
-          Utils.storage.set('guest_token', result.data.token);
-          Utils.storage.set('token', result.data.token);
-          Utils.storage.set('user', result.data.user);
-          Utils.toast('进入成功', 'success');
-          setTimeout(function() { location.href = 'lobby.html'; }, 400);
+      // 游客进入
+      document.getElementById('btn-guest').addEventListener('click', function() {
+        var guestToken = Utils.storage.get('guest_token');
+        if (guestToken) {
+          // 已有游客账号 → 直接登录
+          Utils.storage.set('token', guestToken);
+          location.href = 'lobby.html';
         } else {
-          Utils.toast(result.msg, 'error');
-          btn.disabled = false; btn.textContent = '🎮 游客进入';
+          // 没有游客账号 → 去昵称页
+          location.href = 'guest.html';
         }
       });
 

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>游客进入 - 斗地主</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <div class="rotate-device-overlay">
+    <div class="rotate-icon">📱</div>
+    <div class="rotate-text">请旋转设备至横屏体验游戏</div>
+  </div>
+
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-title">🎮 游客进入</div>
+      <div class="auth-form">
+        <input type="text" class="input" id="guest-nickname" placeholder="请输入你的昵称" maxlength="20" autofocus>
+        <button type="button" class="btn btn-success" id="btn-enter">进入游戏</button>
+      </div>
+      <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.35);">
+        游客获赠 1000 金币 · 注册可获 10000 金币
+      </div>
+      <div class="auth-footer">
+        <a href="login.html">← 返回登录</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    document.getElementById('btn-enter').addEventListener('click', async function() {
+      var nickname = document.getElementById('guest-nickname').value.trim();
+      if (!nickname) { Utils.toast('请输入昵称', 'warning'); return; }
+
+      var btn = document.getElementById('btn-enter');
+      btn.disabled = true; btn.textContent = '进入中...';
+
+      var result = await API.request('/api/auth/guest', {
+        method: 'POST',
+        body: JSON.stringify({ nickname: nickname }),
+      });
+
+      if (result.code === 0) {
+        Utils.storage.set('guest_token', result.data.token);
+        Utils.storage.set('token', result.data.token);
+        Utils.storage.set('user', result.data.user);
+        Utils.toast('进入成功', 'success');
+        setTimeout(function() { location.href = 'lobby.html'; }, 400);
+      } else {
+        Utils.toast(result.msg, 'error');
+        btn.disabled = false; btn.textContent = '进入游戏';
+      }
+    });
+
+    document.getElementById('guest-nickname').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') document.getElementById('btn-enter').click();
+    });
+  </script>
+</body>
+</html>
