@@ -13,24 +13,34 @@
     <div class="rotate-text">请旋转设备至横屏体验游戏</div>
   </div>
 
-  <div class="auth-container">
+  <!-- 已登录/已绑定游客：自动跳转 -->
+  <div id="auto-login" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+    <div style="text-align:center;">
+      <div class="loading"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
+      <div style="margin-top:15px;color:rgba(255,255,255,0.5);font-size:14px;">正在进入...</div>
+    </div>
+  </div>
+
+  <!-- 登录表单 -->
+  <div class="auth-container" id="login-page" style="display:none;">
     <div class="auth-box">
-      <div class="auth-title">🃏 用户登录</div>
+      <div class="auth-title">🃏 斗地主</div>
+
       <form class="auth-form" id="login-form">
-        <input type="text" class="input" id="username" placeholder="请输入用户名" autocomplete="username" required>
-        <input type="password" class="input" id="password" placeholder="请输入密码" autocomplete="current-password" required>
-        <button type="submit" class="btn btn-primary btn-ripple">登 录</button>
+        <input type="text" class="input" id="username" placeholder="用户名" autocomplete="username">
+        <input type="password" class="input" id="password" placeholder="密码" autocomplete="current-password">
+        <button type="submit" class="btn btn-primary">登 录</button>
       </form>
 
-      <div style="text-align:center;margin:16px 0;color:rgba(255,255,255,0.3);font-size:13px;">── 或 ──</div>
+      <div style="text-align:center;margin:14px 0;color:rgba(255,255,255,0.25);font-size:12px;">── 或 ──</div>
 
-      <div class="auth-form" id="guest-form">
+      <div class="auth-form" id="guest-section">
         <input type="text" class="input" id="guest-nickname" placeholder="输入昵称，游客快速进入" maxlength="20">
-        <button type="button" class="btn btn-success btn-ripple" id="btn-guest">🎮 游客进入</button>
+        <button type="button" class="btn btn-success" id="btn-guest">🎮 游客进入</button>
       </div>
 
-      <div style="text-align:center;margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4);">
-        游客仅获赠 1000 金币 · 注册账号可获赠 10000 金币
+      <div style="text-align:center;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.35);">
+        游客 1000 金币 · 注册送 10000 金币
       </div>
 
       <div class="auth-footer">
@@ -42,51 +52,78 @@
   <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
   <script>
-    if (Utils.storage.get('token')) { location.href = 'lobby.html'; }
-    Utils.checkOrientation();
+    (function() {
+      'use strict';
 
-    // 登录
-    document.getElementById('login-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
-      if (!username || !password) { Utils.toast('请填写用户名和密码', 'warning'); return; }
+      var token = Utils.storage.get('token');
+      var guestToken = Utils.storage.get('guest_token');
+      var savedUser = Utils.storage.get('user');
 
-      const btn = e.target.querySelector('button');
-      btn.disabled = true; btn.textContent = '登录中...';
-      const result = await API.login(username, password);
-      if (result.code === 0) {
-        Utils.storage.set('token', result.data.token);
-        Utils.storage.set('user', result.data.user);
-        Utils.toast('登录成功', 'success');
-        setTimeout(() => { location.href = 'lobby.html'; }, 500);
-      } else {
-        Utils.toast(result.msg, 'error');
-        btn.disabled = false; btn.textContent = '登 录';
+      // 1. 已有普通登录 → 直接进大厅
+      if (token && savedUser) {
+        location.href = 'lobby.html';
+        return;
       }
-    });
 
-    // 游客登录
-    document.getElementById('btn-guest').addEventListener('click', async () => {
-      const nickname = document.getElementById('guest-nickname').value.trim();
-      if (!nickname) { Utils.toast('请输入昵称', 'warning'); return; }
+      // 2. 已绑定游客 → 自动登录
+      if (guestToken && savedUser) {
+        Utils.storage.set('token', guestToken);
+        location.href = 'lobby.html';
+        return;
+      }
 
-      const btn = document.getElementById('btn-guest');
-      btn.disabled = true; btn.textContent = '进入中...';
-      const result = await API.request('/api/auth/guest', {
-        method: 'POST',
-        body: JSON.stringify({ nickname }),
+      // 3. 没有任何账号 → 显示登录页
+      document.getElementById('auto-login').style.display = 'none';
+      document.getElementById('login-page').style.display = '';
+
+      // 普通登录
+      document.getElementById('login-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var username = document.getElementById('username').value.trim();
+        var password = document.getElementById('password').value;
+        if (!username || !password) { Utils.toast('请填写用户名和密码', 'warning'); return; }
+
+        var btn = e.target.querySelector('button');
+        btn.disabled = true; btn.textContent = '登录中...';
+        var result = await API.login(username, password);
+        if (result.code === 0) {
+          // 清除游客绑定
+          Utils.storage.remove('guest_token');
+          Utils.storage.set('token', result.data.token);
+          Utils.storage.set('user', result.data.user);
+          Utils.toast('登录成功', 'success');
+          setTimeout(function() { location.href = 'lobby.html'; }, 400);
+        } else {
+          Utils.toast(result.msg, 'error');
+          btn.disabled = false; btn.textContent = '登 录';
+        }
       });
-      if (result.code === 0) {
-        Utils.storage.set('token', result.data.token);
-        Utils.storage.set('user', result.data.user);
-        Utils.toast('游客登录成功', 'success');
-        setTimeout(() => { location.href = 'lobby.html'; }, 500);
-      } else {
-        Utils.toast(result.msg, 'error');
-        btn.disabled = false; btn.textContent = '🎮 游客进入';
-      }
-    });
+
+      // 游客登录
+      document.getElementById('btn-guest').addEventListener('click', async function() {
+        var nickname = document.getElementById('guest-nickname').value.trim();
+        if (!nickname) { Utils.toast('请输入昵称', 'warning'); return; }
+
+        var btn = document.getElementById('btn-guest');
+        btn.disabled = true; btn.textContent = '进入中...';
+        var result = await API.request('/api/auth/guest', {
+          method: 'POST',
+          body: JSON.stringify({ nickname: nickname }),
+        });
+        if (result.code === 0) {
+          // 绑定游客到此浏览器
+          Utils.storage.set('guest_token', result.data.token);
+          Utils.storage.set('token', result.data.token);
+          Utils.storage.set('user', result.data.user);
+          Utils.toast('进入成功', 'success');
+          setTimeout(function() { location.href = 'lobby.html'; }, 400);
+        } else {
+          Utils.toast(result.msg, 'error');
+          btn.disabled = false; btn.textContent = '🎮 游客进入';
+        }
+      });
+
+    })();
   </script>
 </body>
 </html>
