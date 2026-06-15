@@ -40,6 +40,7 @@ const Cards = {
     div.dataset.cardId = card.id;
     div.dataset.value = card.value;
     div.dataset.suit = card.suit;
+    div.dataset.valueDisplay = this.VALUE_DISPLAY[card.value] || '';
 
     const sizeClass = size !== 'normal' ? ` card-${size}` : '';
 
